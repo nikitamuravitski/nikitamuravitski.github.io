@@ -166,13 +166,14 @@ prevButton.onclick = function () {
     if (checkAnimation) return;
     checkAnimation = true;
     currentDate.setMonth(currentDate.getMonth() - 1);
+    currentDate.setDate(1);
     monthName.innerText = monthNameArr[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
     monthContainer.scrollTo({ top: 0, behavior: 'smooth' })
     setTimeout(() => {
         monthContainer.innerHTML = '';
         renderCalender();
         checkAnimation = false;
-        monthContainer.appendChild(circle)
+        monthContainer.appendChild(circle);
     }, 250)
 
 }
@@ -182,6 +183,7 @@ nextButton.onclick = function (event) {
     if (checkAnimation) return
     checkAnimation = true;
     currentDate.setMonth(currentDate.getMonth() + 1);
+    currentDate.setDate(1);
     monthName.innerText = monthNameArr[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
     monthContainer.scrollTo({ top: 30 * document.querySelectorAll('.week').length, behavior: 'smooth' })
     setTimeout(() => {
@@ -189,10 +191,9 @@ nextButton.onclick = function (event) {
         renderCalender();
         checkAnimation = false;
         monthContainer.appendChild(circle);
-
     }, 250)
+   
 
-    
 }
 
 //mouse scroll scrolls to next month
