@@ -238,6 +238,7 @@ prevButton.onclick = function () {
     setTimeout(() => {
         monthContainer.innerHTML = '';
         renderCalender();
+        renderDayScope(window.fromDay, window.toDay);
         checkAnimation = false;
         monthContainer.appendChild(circle);
     }, 250)
@@ -256,6 +257,7 @@ nextButton.onclick = function (event) {
     setTimeout(() => {
         monthContainer.innerHTML = '';
         renderCalender();
+        renderDayScope(window.fromDay, window.toDay);
         checkAnimation = false;
         monthContainer.appendChild(circle);
     }, 250)
