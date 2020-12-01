@@ -80,12 +80,6 @@ let header = document.createElement('div');
 header.id = 'header';
 main.appendChild(header);
 
-let prevButton = document.createElement('button');
-prevButton.id = 'prev';
-let prevButtonImage = document.createElement('i')
-prevButtonImage.classList = 'fas fa-arrow-left';
-prevButton.appendChild(prevButtonImage);
-header.appendChild(prevButton);
 
 
 let monthNameArr = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -95,12 +89,33 @@ monthName.id = 'monthName';
 monthName.innerText = monthNameArr[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
 header.appendChild(monthName);
 
+
+let headerRangeContainer = document.createElement('div');
+header.appendChild(headerRangeContainer);
+headerRangeContainer.classList = 'headerRangeContainer';
+let headerFromRange = document.createElement('div');
+let headerToRange = document.createElement('div');
+headerFromRange.classList = 'headerRangeElement';
+headerToRange.classList = 'headerRangeElement';
+headerRangeContainer.appendChild(headerFromRange)
+headerRangeContainer.appendChild(headerToRange)
+
+
+
+
+let prevButton = document.createElement('button');
+prevButton.id = 'prev';
+let prevButtonImage = document.createElement('i')
+prevButtonImage.classList = 'fas fa-sort-up';
+prevButton.appendChild(prevButtonImage);
+header.appendChild(prevButton);
+
 let nextButton = document.createElement('button');
 nextButton.id = 'next';
 let nextButtonSpan = document.createElement('span');
 nextButton.appendChild(nextButtonSpan)
 let nextButtonImage = document.createElement('i');
-nextButtonImage.classList = 'fas fa-arrow-right';
+nextButtonImage.classList = 'fas fa-sort-down';
 nextButtonSpan.appendChild(nextButtonImage);
 header.appendChild(nextButton);
 
@@ -158,28 +173,42 @@ function renderArr(arr) {
 //-----------selecting day scope for 
 
 function renderDayScope(from, to) {
+    if (!from) {
+        return
+    }
     to = to || from;
     //if from day is futurer than to day, i am swapping them
-    if(new Date(from.dataset.date).getTime() > new Date(to.dataset.date).getTime()) {
-            let swap = from;
-            from = to;
-            to = swap;
-        }
-        let isOnTimeline = false;
+    if (new Date(from.dataset.date).getTime() > new Date(to.dataset.date).getTime()) {
+        let swap = from;
+        from = to;
+        to = swap;
+    }
     document.querySelectorAll('.day').forEach(element => {
-            let elementDate = element.dataset.date;
-            if(elementDate === from.dataset.date) {
-                isOnTimeline = true;        
-            } 
-            if(isOnTimeline) {
-                element.classList.add('focus')
-            }
-            if(elementDate === to.dataset.date) {
-                isOnTimeline = false;
-                return
-            }
+        let elementDate = new Date(element.dataset.date).getTime();
+        if (elementDate >= new Date(from.dataset.date).getTime()) {
+
+            element.classList.add('focus')
+        }
+        if (elementDate > new Date(to.dataset.date).getTime()) {
+            element.classList.remove('focus')
+            return
+        }
     });
 
+}
+
+function dateDangeDivRender() {
+    if(window.fromDay) {
+        headerFromRange.innerText =`from: ${new Date(window.fromDay.dataset.date).toDateString()}`;
+        console.log(window.toDay)
+    } else {
+        headerFromRange.innerText = ''
+    }
+    if(window.toDay) {
+        headerToRange.innerText = `to: ${new Date(window.toDay.dataset.date).toDateString()}`;
+    } else {
+        headerToRange.innerText = ''
+    }
 }
 
 function renderCalender() {
@@ -202,8 +231,6 @@ function setEventAllDays() {
             if (checkFocus) {
                 window.fromDay = '';
                 window.toDay = '';
-                window.fromIndex = '';
-                window.toIndex = '';
                 document.querySelectorAll('.day').forEach(element => element.classList.remove('focus'))
                 checkFocus = false
             }
@@ -216,8 +243,9 @@ function setEventAllDays() {
                 checkFocus = true;
                 window.toDay = event.target;
             }
+            dateDangeDivRender();
             renderDayScope(window.fromDay, window.toDay);
-
+            
         }
     });
 }
@@ -267,7 +295,7 @@ nextButton.onclick = function (event) {
 
 //mouse scroll scrolls to next month
 main.onwheel = function (event) {
-    if (event.deltaY < 0) {
+    if (event.deltaY > 0) {
         nextButton.click();
     } else {
         prevButton.click();

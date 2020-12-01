@@ -20,27 +20,40 @@ body {
     color: #EDDDD4;
     background: #197278;
     width: 250px;
-    height: 70px;
+    height: 50px;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    position: relative;
     flex-wrap: nowrap;
+    flex-direction: column;
 
 }
 
  #header button {
     display: flex;
-    align-items: center;
     border: none;
+    align-items: center;
     color: #283D3B;
     background-color: rgba(255, 255, 255, 0);
-    height: 12px;
+    height: 7px;
     transition: all 0.1s ease-in;
     width: 12px; 
+    margin-left: 10px;
 } 
+#prev {
+    position: absolute;
+    right: 20px;
+    top:35%;
+}
+
+#next {
+    position: absolute;
+    right: 20px;
+    bottom: 35%;
+}
 #header button:hover {
     cursor: pointer;
-    text-shadow: 2px 2px  2px#0d383b71;
+    
+    text-shadow: 0 0 2px#0d383b71;
     transition: all 0.15s ease-in;
     transform: scale(1.1);
 
@@ -52,6 +65,16 @@ body {
     
 }
 
+.headerRangeContainer {
+    margin-left: 10px;
+    font-size: 10px;
+    color: rgba(187, 187, 187, 0.767);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 150px;
+    height: 24px;
+}
 #dayHeaderContainer {
     width: 250px;
     height: 35px;
@@ -157,8 +180,10 @@ body {
     color:rgb(216, 216, 216);
 }
 #monthName {
+    margin-left: 10px;
+    margin-top: 5px;
     width: 150px;
-    text-align: center;
+    text-align: left;
 }
 .inDay {
 
