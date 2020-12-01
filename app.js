@@ -150,6 +150,45 @@ function renderArr(arr) {
         })
     });
 }
+
+
+
+
+
+//-----------selecting day scope for 
+function setDayScope(from, to, fromIndex, toIndex) {
+    let fromDate = {
+        year: new Date(from.getAttribute('data-date')).getFullYear(),
+        month: new Date(from.getAttribute('data-date')).getMonth(),
+        date: new Date(from.getAttribute('data-date')).getDate(),
+        index: fromIndex
+    }
+    let toDate = {
+        year: new Date(to.getAttribute('data-date')).getFullYear(),
+        month: new Date(to.getAttribute('data-date')).getMonth(),
+        date: new Date(to.getAttribute('data-date')).getDate(),
+        index: toIndex
+    }
+    return [fromDate, toDate]
+}
+function renderDayScope(from, to, fromIndex, toIndex) {
+    to = to || from;
+
+    //if from day is futurer than to day, i am swapping them
+    if(toIndex < fromIndex) {
+            let swap = fromIndex;
+            fromIndex = toIndex;
+            toIndex = swap;
+        }
+
+    document.querySelectorAll('.day').forEach((element, index) => {
+            if(index >= fromIndex && index <= toIndex) {
+                element.classList.add('focus')
+            } 
+    });
+
+}
+
 function renderCalender() {
 
     arrayForRender(currentDate, prevMonthArr, displayMonthArr, nextMonthArr);
@@ -157,11 +196,50 @@ function renderCalender() {
     renderArr(displayMonthArr);
     renderArr(nextMonthArr);
     monthContainer.scrollTop = 30 * prevMonthArr.length;
-
+    setEventAllDays();
 }
 renderCalender();
 
+
+let checkFocus = false;
+let checkDay = false;
+function setEventAllDays() {
+    document.querySelectorAll('.day').forEach((element, index) => {
+        element.onclick = event => {
+            console.log('click')
+            if (checkFocus) {
+                window.fromDay = '';
+                window.toDay = '';
+                window.fromIndex = '';
+                window.toIndex = '';
+                document.querySelectorAll('.day').forEach(element => element.classList.remove('focus'))
+                checkFocus = false
+            }
+            if (!checkDay) {
+                element.classList.add('focus')
+                checkDay = true;
+                window.fromDay = event.target;
+                window.fromIndex = index;
+                window.toIndex = index;
+
+            } else {
+                checkDay = false;
+                checkFocus = true;
+                window.toDay = event.target;
+                window.toIndex = index;
+            }
+            renderDayScope(window.fromDay, window.toDay, window.fromIndex, window.toIndex);
+
+        }
+    });
+}
+
+
+
+
 let checkAnimation = false;
+
+//prev button handler
 prevButton.onclick = function () {
     if (checkAnimation) return;
     checkAnimation = true;
@@ -178,6 +256,7 @@ prevButton.onclick = function () {
 
 }
 
+//next button handler
 nextButton.onclick = function (event) {
 
     if (checkAnimation) return
@@ -192,7 +271,7 @@ nextButton.onclick = function (event) {
         checkAnimation = false;
         monthContainer.appendChild(circle);
     }, 250)
-   
+
 
 }
 
@@ -208,31 +287,13 @@ monthContainer.onwheel = function (event) {
     event.preventDefault()
 }
 
+// circle for hover effect
 let circle = document.createElement('div')
 circle.id = 'circle';
 monthContainer.appendChild(circle)
 circle.style.top = '700px';
 
-let selectedDay;
-
-function rerenderSelectedDay(div) {
-    if(document.querySelector('.focus')) 
-        document.querySelector('.focus').classList.remove('focus');
-        console.log(selectedDay)
-    div.classList.add('focus') ;
-}
-
-document.querySelectorAll('.day').forEach((element, index) => {
-    let pickedDate;
-    element.onclick = event => {
-
-            selectedDay = new Date(event.target.getAttribute('data-date'));
-            rerenderSelectedDay(event.target);
-
-    }
-
-});
-
+//hover effect handler for calendar
 document.body.onmousemove = function (event) {
     circle.style.left = `${event.clientX - monthContainer.getBoundingClientRect().left - 40}px`;
     if (prevMonthArr.length > 4) {

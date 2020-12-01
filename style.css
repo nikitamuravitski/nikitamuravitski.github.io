@@ -110,7 +110,7 @@ body {
     align-items: center;
     width: 100%;
     height: calc(180px/6);
-    box-shadow:inset 0px 0px 0px 2px rgba(85, 85, 85, 0.219);
+    /* box-shadow:inset 0px 0px 0px 2px rgba(85, 85, 85, 0.219); */
 }
 
 .focus {
@@ -122,8 +122,23 @@ body {
     width: 100%;
     height: calc(180px/6);
     border: 1px solid white;
-    background: #df4962;
-    color: white;
+    box-shadow:inset 0px 0px 0px 2px #62b8bb;
+    
+    color: black;
+    outline: none;
+}
+.focus:hover {
+    box-sizing: border-box;
+    display: flex;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: calc(180px/6);
+    box-shadow:inset 0px 0px 0px 2px #5fffff4b;
+    
+    /*background: #df4962;*/
+    color: #414141;
     outline: none;
 }
 
@@ -132,10 +147,11 @@ body {
     z-index: 2;
     width: 100%;
     height: 100%;
-    color: white;
+    color: black;
+    background: #197278;
 }
 .selected > .inDay {
-    background: #197278;
+
 }
 .outOfMonth {
     color:rgb(216, 216, 216);
@@ -155,7 +171,7 @@ body {
     background: white;
     z-index: -10;
 
-    /* margin: 2px 2px;  */
+    
 
 }
 
@@ -164,7 +180,7 @@ body {
     position: absolute;
     width: 80px;
     height: 80px;
-    background: radial-gradient( rgba(77, 77, 77, 0.404) 0%, transparent 70%);
+    background: radial-gradient( rgba(13, 95, 77, 0.315) 0%, transparent 70%);
     z-index: -20;
     
 }
