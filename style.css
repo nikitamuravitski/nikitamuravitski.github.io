@@ -68,7 +68,8 @@ body {
 .headerRangeContainer {
     margin-left: 10px;
     font-size: 10px;
-    color: rgba(187, 187, 187, 0.767);
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.801);
     position: relative;
     display: flex;
     flex-direction: column;
