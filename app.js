@@ -156,35 +156,28 @@ function renderArr(arr) {
 
 
 //-----------selecting day scope for 
-function setDayScope(from, to, fromIndex, toIndex) {
-    let fromDate = {
-        year: new Date(from.getAttribute('data-date')).getFullYear(),
-        month: new Date(from.getAttribute('data-date')).getMonth(),
-        date: new Date(from.getAttribute('data-date')).getDate(),
-        index: fromIndex
-    }
-    let toDate = {
-        year: new Date(to.getAttribute('data-date')).getFullYear(),
-        month: new Date(to.getAttribute('data-date')).getMonth(),
-        date: new Date(to.getAttribute('data-date')).getDate(),
-        index: toIndex
-    }
-    return [fromDate, toDate]
-}
-function renderDayScope(from, to, fromIndex, toIndex) {
+
+function renderDayScope(from, to) {
     to = to || from;
-
     //if from day is futurer than to day, i am swapping them
-    if(toIndex < fromIndex) {
-            let swap = fromIndex;
-            fromIndex = toIndex;
-            toIndex = swap;
+    if(new Date(from.dataset.date).getTime() > new Date(to.dataset.date).getTime()) {
+            let swap = from;
+            from = to;
+            to = swap;
         }
-
-    document.querySelectorAll('.day').forEach((element, index) => {
-            if(index >= fromIndex && index <= toIndex) {
-                element.classList.add('focus')
+        let isOnTimeline = false;
+    document.querySelectorAll('.day').forEach(element => {
+            let elementDate = element.dataset.date;
+            if(elementDate === from.dataset.date) {
+                isOnTimeline = true;        
             } 
+            if(isOnTimeline) {
+                element.classList.add('focus')
+            }
+            if(elementDate === to.dataset.date) {
+                isOnTimeline = false;
+                return
+            }
     });
 
 }
@@ -200,13 +193,12 @@ function renderCalender() {
 }
 renderCalender();
 
-
+//setting event for all rendered days
 let checkFocus = false;
 let checkDay = false;
 function setEventAllDays() {
-    document.querySelectorAll('.day').forEach((element, index) => {
+    document.querySelectorAll('.day').forEach(element => {
         element.onclick = event => {
-            console.log('click')
             if (checkFocus) {
                 window.fromDay = '';
                 window.toDay = '';
@@ -219,16 +211,12 @@ function setEventAllDays() {
                 element.classList.add('focus')
                 checkDay = true;
                 window.fromDay = event.target;
-                window.fromIndex = index;
-                window.toIndex = index;
-
             } else {
                 checkDay = false;
                 checkFocus = true;
                 window.toDay = event.target;
-                window.toIndex = index;
             }
-            renderDayScope(window.fromDay, window.toDay, window.fromIndex, window.toIndex);
+            renderDayScope(window.fromDay, window.toDay);
 
         }
     });
