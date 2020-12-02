@@ -336,20 +336,17 @@ nextButton.onclick = function (event) {
         }, 250)
     }
     if (isMonth) {
-        console.log(1)
+
         if (checkAnimation) return
-        console.log(2)
         checkAnimation = true;
         monthName.innerText = currentDate.getFullYear() + 1;
         monthContainer.scrollTo({ top: 340, behavior: 'smooth' });
-        console.log(3)
         setTimeout(() => {
             monthContainer.innerHTML = '';
             currentDate = new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), currentDate.getDate())
             monthsRenderModule();
             checkAnimation = false;
             monthContainer.appendChild(circle);
-            console.log(4)
         }, 300)
     }
 }
@@ -369,25 +366,24 @@ monthContainer.onwheel = function (event) {
 // circle for hover effect
 let circle = document.createElement('div')
 circle.id = 'circle';
-circle.style.width = '80px';
-circle.style.height = '80px';
+
 monthContainer.appendChild(circle)
 circle.style.top = '700px';
 
 //hover effect handler for calendar
 document.body.onmousemove = function (event) {
     if (isDay) {
-        circle.style.left = `${event.clientX - monthContainer.getBoundingClientRect().left - 40}px`;
+        circle.style.left = `${event.clientX - monthContainer.getBoundingClientRect().left - 60}px`;
         if (prevMonthArr.length > 4) {
-            circle.style.top = `${event.clientY + (prevMonthArr.length - 4) * 30}px`;
+            circle.style.top = `${event.clientY + (prevMonthArr.length - 4) * 30 - 20}px`;
         }
         else {
-            circle.style.top = `${event.clientY}px`;
+            circle.style.top = `${event.clientY - 20}px`;
         }
     }
     if (isMonth) {
         circle.style.left = `${event.clientX - monthContainer.getBoundingClientRect().left - 60}px`;
-        circle.style.top = `${event.clientY + 50}px`;
+        circle.style.top = `${event.clientY + 55}px`;
     }
 }
 
@@ -416,8 +412,6 @@ monthName.onclick = function (event) {
     monthContainer.style.height = '220px';
     monthContainer.style.flexDirection = 'row';
     monthContainer.style.flexWrap = 'wrap';
-    circle.style.width = '120px';
-    circle.style.height = '120px';
     monthContainer.appendChild(circle);
     monthsRenderModule();
 }
@@ -449,14 +443,14 @@ function renderDivs() {
         monthContainer.appendChild(wholeMonthDiv);
         wholeMonthDiv.appendChild(inWholeMonth);
 
-        wholeMonthDiv.onclick = function() {
+        wholeMonthDiv.onclick = function () {
             //resetting global bool vars 
             isDay = true;
             isMonth = false;
             isYear = false;
             currentDate = new Date(wholeMonthDiv.dataset.date);
             monthContainer.innerHTML = '';
-            monthContainer.style.height= '180px';
+            monthContainer.style.height = '180px';
             dayHeaderContainer.style.display = 'flex'
             renderCalender();
             renderDayScope(window.fromDay, window.toDay);

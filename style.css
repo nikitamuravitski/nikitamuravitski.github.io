@@ -242,9 +242,9 @@ height: 100%;
 #circle {
     display: block;
     position: absolute;
-    width: 80px;
-    height: 80px;
-    background: radial-gradient( rgba(13, 95, 77, 0.315) 0%, transparent 70%);
+    width: 120px;
+    height: 120px;
+    background: radial-gradient( rgba(13, 95, 77, 0.315) 0%, transparent 65%);
     z-index: -20;
     
 }
