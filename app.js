@@ -188,7 +188,7 @@ function renderArr(arr) {
 
 //-----------selecting day scope for 
 
-function renderDayScope(from, to) {
+function renderDayScope(from, to, classTag, focusClassTag) {
     if (!from) {
         return
     }
@@ -199,15 +199,21 @@ function renderDayScope(from, to) {
         from = to;
         to = swap;
     }
-    document.querySelectorAll('.day').forEach(element => {
-        let elementDate = new Date(element.dataset.date).getTime();
-        if (elementDate >= new Date(from.dataset.date).getTime()) {
 
-            element.classList.add('focus')
+    document.querySelectorAll(classTag).forEach(element => {
+        let elementDate;
+
+        if (isYear) {
+            elementDate = new Date(new Date(element.dataset.date).getFullYear() , 0, 1).getTime();
+        }            
+        if (isMonth) {
+            elementDate = new Date(new Date(element.dataset.date).getFullYear(), new Date(element.dataset.date).getMonth(), 1).getTime();
+        }           
+        if (isDay) {
+            elementDate = new Date(element.dataset.date).getTime();
         }
-        if (elementDate > new Date(to.dataset.date).getTime()) {
-            element.classList.remove('focus')
-            return
+        if (elementDate >= new Date(from.dataset.date).getTime() && elementDate <= new Date(to.dataset.date).getTime()) {
+            element.classList.add(focusClassTag)
         }
     });
 
@@ -218,7 +224,6 @@ function dateDangeDivRender() {
         headerRangeContainer.style.display = 'flex';
         headerFromRange.innerText = `from: ${new Date(window.fromDay.dataset.date).toDateString()}`;
     } else {
-
         headerFromRange.innerText = '';
     }
     if (window.toDay) {
@@ -259,14 +264,17 @@ function setEventAllDays() {
                     window.toDay = event.target;
                 }
                 dateDangeDivRender();
-                renderDayScope(window.fromDay, window.toDay);
+                renderDayScope(window.fromDay, window.toDay, '.day', 'focus');
             }
-
-
-
-
         }
     });
+}
+
+function removeFocus(classTag, focusClassTag) {
+    console.log(3)
+    document.querySelectorAll(classTag).forEach(element => {
+        element.classList.remove(focusClassTag)
+    })
 }
 
 removeRangeButton.onclick = function (event) {
@@ -274,8 +282,19 @@ removeRangeButton.onclick = function (event) {
     window.toDay = false;
     checkFocus = false;
     checkDay = false;
-    document.querySelectorAll('.day').forEach(element => element.classList.remove('focus'))
 
+    if (isDay) {
+        removeFocus('.day', 'focus');
+    }
+    if (isMonth) {
+        removeFocus('.wholeMonthDiv', 'wholeDivFocus');
+        removeFocus('.day', 'focus');
+    }
+    if (isYear) {
+        removeFocus('.wholeYearDiv', 'wholeYearFocus');
+        removeFocus('.wholeMonthDiv', 'wholeDivFocus');
+        removeFocus('.day', 'focus');
+    }
     headerRangeContainer.style.display = 'none'
 }
 
@@ -294,7 +313,7 @@ prevButton.onclick = function () {
         setTimeout(() => {
             monthContainer.innerHTML = '';
             renderCalender();
-            renderDayScope(window.fromDay, window.toDay);
+            renderDayScope(window.fromDay, window.toDay, '.day', 'focus');
             checkAnimation = false;
             monthContainer.appendChild(circle);
         }, 250)
@@ -315,11 +334,23 @@ prevButton.onclick = function () {
             monthContainer.appendChild(circle);
         }, 300)
     }
+    if (isYear) {
+        if (checkAnimation) return
+        checkAnimation = true;
+        monthName.innerText = `${currentDate.getFullYear() - 10} - ${currentDate.getFullYear()}`;
+        monthContainer.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => {
+            monthContainer.innerHTML = '';
+            currentDate = new Date(currentDate.getFullYear() - 10, 1, 1)
+            monthsRenderModule();
+            checkAnimation = false;
 
+        }, 300)
+    }
 }
 
 //next button handler
-nextButton.onclick = function (event) {
+nextButton.onclick = function () {
     if (isDay) {
         if (checkAnimation) return
         checkAnimation = true;
@@ -330,9 +361,9 @@ nextButton.onclick = function (event) {
         setTimeout(() => {
             monthContainer.innerHTML = '';
             renderCalender();
-            renderDayScope(window.fromDay, window.toDay);
+            renderDayScope(window.fromDay, window.toDay, '.day', 'focus');
             checkAnimation = false;
-            monthContainer.appendChild(circle);
+
         }, 250)
     }
     if (isMonth) {
@@ -346,7 +377,20 @@ nextButton.onclick = function (event) {
             currentDate = new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), currentDate.getDate())
             monthsRenderModule();
             checkAnimation = false;
-            monthContainer.appendChild(circle);
+
+        }, 300)
+    }
+    if (isYear) {
+        if (checkAnimation) return
+        checkAnimation = true;
+        monthName.innerText = `${currentDate.getFullYear() + 10} - ${currentDate.getFullYear() + 20}`;
+        monthContainer.scrollTo({ top: 220, behavior: 'smooth' });
+        setTimeout(() => {
+            monthContainer.innerHTML = '';
+            currentDate = new Date(currentDate.getFullYear() + 10, 1, 1)
+            monthsRenderModule();
+            checkAnimation = false;
+
         }, 300)
     }
 }
@@ -385,41 +429,51 @@ document.body.onmousemove = function (event) {
         circle.style.left = `${event.clientX - monthContainer.getBoundingClientRect().left - 60}px`;
         circle.style.top = `${event.clientY + 55}px`;
     }
+    if (isYear) {
+        circle.style.left = `${event.clientX - monthContainer.getBoundingClientRect().left - 60}px`;
+        circle.style.top = `${event.clientY}px`;
+    }
 }
 
 
 
 
 
-// =============== Month View =================
+// =============== Month and Year View =================
 
 
 
 
 //creating new section of months instead of days
+//for proper render i need to switch monthContainer to other flex-direction and flex-wrap
+monthName.onclick = function () {
+    if (isMonth) {
+        isDay = false;
+        isMonth = false;
+        isYear = true;
 
-monthName.onclick = function (event) {
-    //FOR NOW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    if (isMonth) return
 
-    isDay = false;
-    isMonth = true;
-
+    }
+    if (isDay) {
+        isDay = false;
+        isMonth = true;
+        isYear = false;
+    }
     monthContainer.innerHTML = '';
-
     dayHeaderContainer.style.display = 'none';
-
     monthContainer.style.height = '220px';
     monthContainer.style.flexDirection = 'row';
     monthContainer.style.flexWrap = 'wrap';
-    monthContainer.appendChild(circle);
+
     monthsRenderModule();
+    monthContainer.appendChild(circle);
+
 }
+
 let monthShortNameArr = monthNameArr.map(item => {
     return item[0] + item[1] + item[2]
 })
 
-//for proper render i need to switch monthContainer to another flex-direction and flex-wrap
 function renderDivs() {
     for (let i = 0; i < 40; i++) {
 
@@ -437,7 +491,7 @@ function renderDivs() {
             }
 
         }
-        let inWholeMonth = document.createElement('div')
+        let inWholeMonth = document.createElement('div');
         inWholeMonth.classList = 'inWholeMonth';
         wholeMonthDiv.innerText = monthShortNameArr[i % 12];
         monthContainer.appendChild(wholeMonthDiv);
@@ -453,8 +507,53 @@ function renderDivs() {
             monthContainer.style.height = '180px';
             dayHeaderContainer.style.display = 'flex'
             renderCalender();
-            renderDayScope(window.fromDay, window.toDay);
+            renderDayScope(window.fromDay, window.toDay, '.day', 'focus');
             monthName.innerText = monthNameArr[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
+            monthContainer.appendChild(circle);
+
+        }
+
+    }
+}
+
+function renderYears() {
+    while (currentDate.getFullYear() % 10 != 0) {
+        currentDate = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), currentDate.getDate())
+    };
+    for (let i = 0; i < 50; i++) {
+
+        let wholeMonthDiv = document.createElement('div');
+        wholeMonthDiv.classList = 'wholeYearDiv';
+        wholeMonthDiv.setAttribute('data-date', `${new Date(currentDate.getFullYear() - 15 + i, 1, 1)}`);
+
+        if (new Date(wholeMonthDiv.dataset.date).getFullYear() >= currentDate.getFullYear()) {
+            if (new Date(wholeMonthDiv.dataset.date).getFullYear() < currentDate.getFullYear() + 10) {
+                wholeMonthDiv.style.color = 'black';
+                //highlighting current month
+                if (new Date(wholeMonthDiv.dataset.date).getFullYear() === new Date().getFullYear()) {
+                    wholeMonthDiv.style.boxShadow = 'inset 0 0 0 2px #197278'
+                }
+            }
+
+
+        }
+        let inWholeMonth = document.createElement('div');
+        inWholeMonth.classList = 'inWholeYear';
+        wholeMonthDiv.innerText = new Date(wholeMonthDiv.dataset.date).getFullYear();
+        monthContainer.appendChild(wholeMonthDiv);
+        wholeMonthDiv.appendChild(inWholeMonth);
+
+        wholeMonthDiv.onclick = function () {
+            //resetting global bool vars 
+            isDay = false;
+            isMonth = true;
+            isYear = false;
+            currentDate = new Date(wholeMonthDiv.dataset.date);
+            monthContainer.innerHTML = '';
+            renderDivs();
+            renderDayScope(window.fromDay, window.toDay, '.wholeMonthDiv', 'wholeDivFocus');
+            monthName.innerText = currentDate.getFullYear();
+            monthContainer.scrollTop = 165;
             monthContainer.appendChild(circle);
 
         }
@@ -464,9 +563,20 @@ function renderDivs() {
 
 
 
-//main module that will invoke all functions
+//main year render module that will invoke all functions
 function monthsRenderModule() {
-    monthName.innerText = currentDate.getFullYear();
-    renderDivs();
-    monthContainer.scrollTop = 165;
+    if (isMonth) {
+        renderDivs();
+        renderDayScope(window.fromDay, window.toDay, '.wholeMonthDiv', 'wholeDivFocus');
+        monthName.innerText = currentDate.getFullYear();
+        monthContainer.scrollTop = 165;
+    }
+    if (isYear) {
+        renderYears();
+        renderDayScope(window.fromDay, window.toDay, '.wholeYearDiv', 'wholeYearFocus');
+
+        monthName.innerText = `${currentDate.getFullYear()} - ${currentDate.getFullYear() + 10}`;
+        monthContainer.scrollTop = 110;
+    }
+
 }
