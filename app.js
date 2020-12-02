@@ -6,9 +6,22 @@ let prevMonthArr = [];
 let nextMonthArr = [];
 
 
-// firstMondayVar is var that will contai date of first displayed monday
+//variables for states of app
+
+//this is for displaying day calendar as default
+let isDay = true;
+
+//this is for changing view from day calendar to month calendar
+let isMonth = false;
+
+//this is for changing view from month calendar to year calendar
+let isYear = false;
+
+// firstMondayVar is var that will contain date of first displayed in view monday
 // that needs to be displayed on current month
 // returns  date
+
+
 function firstMondayFinder(currentDateVar) {
     let firstMondayVar = new Date(currentDateVar.getFullYear(), currentDateVar.getMonth(), 1);
     for (let i = 0; firstMondayVar.getDay() !== 1; i++) {
@@ -43,9 +56,6 @@ function arrFilter(arr, modArr) {
 
 }
 
-// iach time you invoke it, it adds to current date var 1 month
-// so i can go forvard just by clicking the button
-// if i need to go back i would need to subtract 2 months
 
 function arrayForRender(currentDateVar, previousMonthArr, displayMonthArr, nextMonthArr) {
 
@@ -86,6 +96,7 @@ let monthNameArr = ['January', 'February', 'March', 'April', 'May', 'June', 'Jul
 let monthName = document.createElement('div');
 monthName.id = 'monthName';
 
+
 monthName.innerText = monthNameArr[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
 header.appendChild(monthName);
 
@@ -93,14 +104,22 @@ header.appendChild(monthName);
 let headerRangeContainer = document.createElement('div');
 header.appendChild(headerRangeContainer);
 headerRangeContainer.classList = 'headerRangeContainer';
+headerRangeContainer.style.display = 'none';
 let headerFromRange = document.createElement('div');
 let headerToRange = document.createElement('div');
 headerFromRange.classList = 'headerRangeElement';
 headerToRange.classList = 'headerRangeElement';
-headerRangeContainer.appendChild(headerFromRange)
-headerRangeContainer.appendChild(headerToRange)
+headerRangeContainer.appendChild(headerFromRange);
+headerRangeContainer.appendChild(headerToRange);
 
+//creating remove button for selected range
 
+let removeRangeButton = document.createElement('button');
+let removeRangeButtonImage = document.createElement('i');
+removeRangeButtonImage.classList = 'far fa-trash-alt ';
+removeRangeButton.appendChild(removeRangeButtonImage)
+headerRangeContainer.appendChild(removeRangeButton);
+removeRangeButton.classList = 'removeChangeButton';
 
 
 let prevButton = document.createElement('button');
@@ -150,7 +169,7 @@ function renderArr(arr) {
             let day = document.createElement('div');
             day.classList = 'day';
             day.setAttribute('data-date', `${item}`)
-            day.innerText = item.getDate();
+            day.innerHTML = item.getDate();
             day.style.userSelect = 'none';
             let inDay = document.createElement('div');
             inDay.classList = 'inDay'
@@ -159,15 +178,12 @@ function renderArr(arr) {
                 day.classList = 'day outOfMonth';
             }
             if (item.getDate() === new Date().getDate() && item.getMonth() === new Date().getMonth() && item.getFullYear() === new Date().getFullYear()) {
-                day.classList = 'day selected';
+                day.style.boxShadow = 'inset 0 0 0 2px #197278'
             }
             week.appendChild(day)
         })
     });
 }
-
-
-
 
 
 //-----------selecting day scope for 
@@ -196,29 +212,32 @@ function renderDayScope(from, to) {
     });
 
 }
-
+//module that renders info container in header about date range 
 function dateDangeDivRender() {
-    if(window.fromDay) {
-        headerFromRange.innerText =`from: ${new Date(window.fromDay.dataset.date).toDateString()}`;
-        console.log(window.toDay)
+    if (window.fromDay) {
+        headerRangeContainer.style.display = 'flex';
+        headerFromRange.innerText = `from: ${new Date(window.fromDay.dataset.date).toDateString()}`;
     } else {
-        headerFromRange.innerText = ''
+
+        headerFromRange.innerText = '';
     }
-    if(window.toDay) {
+    if (window.toDay) {
         headerToRange.innerText = `to: ${new Date(window.toDay.dataset.date).toDateString()}`;
     } else {
-        headerToRange.innerText = ''
+        headerToRange.innerText = '';
     }
 }
 
+//render module for rendering day view
 function renderCalender() {
-
-    arrayForRender(currentDate, prevMonthArr, displayMonthArr, nextMonthArr);
-    renderArr(prevMonthArr);
-    renderArr(displayMonthArr);
-    renderArr(nextMonthArr);
-    monthContainer.scrollTop = 30 * prevMonthArr.length;
-    setEventAllDays();
+    if (isDay) {
+        arrayForRender(currentDate, prevMonthArr, displayMonthArr, nextMonthArr);
+        renderArr(prevMonthArr);
+        renderArr(displayMonthArr);
+        renderArr(nextMonthArr);
+        monthContainer.scrollTop = 30 * prevMonthArr.length;
+        setEventAllDays();
+    }
 }
 renderCalender();
 
@@ -228,69 +247,111 @@ let checkDay = false;
 function setEventAllDays() {
     document.querySelectorAll('.day').forEach(element => {
         element.onclick = event => {
-            if (checkFocus) {
-                window.fromDay = '';
-                window.toDay = '';
-                document.querySelectorAll('.day').forEach(element => element.classList.remove('focus'))
-                checkFocus = false
+            if (!checkFocus) {
+
+                if (!checkDay) {
+                    element.classList.add('focus')
+                    checkDay = true;
+                    window.fromDay = event.target;
+                } else {
+                    checkDay = false;
+                    checkFocus = true;
+                    window.toDay = event.target;
+                }
+                dateDangeDivRender();
+                renderDayScope(window.fromDay, window.toDay);
             }
-            if (!checkDay) {
-                element.classList.add('focus')
-                checkDay = true;
-                window.fromDay = event.target;
-            } else {
-                checkDay = false;
-                checkFocus = true;
-                window.toDay = event.target;
-            }
-            dateDangeDivRender();
-            renderDayScope(window.fromDay, window.toDay);
-            
+
+
+
+
         }
     });
 }
 
+removeRangeButton.onclick = function (event) {
+    window.fromDay = false;
+    window.toDay = false;
+    checkFocus = false;
+    checkDay = false;
+    document.querySelectorAll('.day').forEach(element => element.classList.remove('focus'))
 
+    headerRangeContainer.style.display = 'none'
+}
 
 
 let checkAnimation = false;
 
 //prev button handler
 prevButton.onclick = function () {
-    if (checkAnimation) return;
-    checkAnimation = true;
-    currentDate.setMonth(currentDate.getMonth() - 1);
-    currentDate.setDate(1);
-    monthName.innerText = monthNameArr[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
-    monthContainer.scrollTo({ top: 0, behavior: 'smooth' })
-    setTimeout(() => {
-        monthContainer.innerHTML = '';
-        renderCalender();
-        renderDayScope(window.fromDay, window.toDay);
-        checkAnimation = false;
-        monthContainer.appendChild(circle);
-    }, 250)
+    if (isDay) {
+        if (checkAnimation) return;
+        checkAnimation = true;
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        currentDate.setDate(1);
+        monthName.innerText = monthNameArr[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
+        monthContainer.scrollTo({ top: 0, behavior: 'smooth' })
+        setTimeout(() => {
+            monthContainer.innerHTML = '';
+            renderCalender();
+            renderDayScope(window.fromDay, window.toDay);
+            checkAnimation = false;
+            monthContainer.appendChild(circle);
+        }, 250)
+
+    }
+    if (isMonth) {
+
+        if (checkAnimation) return
+        checkAnimation = true;
+
+        monthName.innerText = currentDate.getFullYear() - 1;
+        monthContainer.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(() => {
+            monthContainer.innerHTML = '';
+            currentDate = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), currentDate.getDate())
+            monthsRenderModule();
+            checkAnimation = false;
+            monthContainer.appendChild(circle);
+        }, 300)
+    }
 
 }
 
 //next button handler
 nextButton.onclick = function (event) {
-
-    if (checkAnimation) return
-    checkAnimation = true;
-    currentDate.setMonth(currentDate.getMonth() + 1);
-    currentDate.setDate(1);
-    monthName.innerText = monthNameArr[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
-    monthContainer.scrollTo({ top: 30 * document.querySelectorAll('.week').length, behavior: 'smooth' })
-    setTimeout(() => {
-        monthContainer.innerHTML = '';
-        renderCalender();
-        renderDayScope(window.fromDay, window.toDay);
-        checkAnimation = false;
-        monthContainer.appendChild(circle);
-    }, 250)
-
-
+    if (isDay) {
+        if (checkAnimation) return
+        checkAnimation = true;
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        currentDate.setDate(1);
+        monthName.innerText = monthNameArr[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
+        monthContainer.scrollTo({ top: 30 * document.querySelectorAll('.week').length, behavior: 'smooth' })
+        setTimeout(() => {
+            monthContainer.innerHTML = '';
+            renderCalender();
+            renderDayScope(window.fromDay, window.toDay);
+            checkAnimation = false;
+            monthContainer.appendChild(circle);
+        }, 250)
+    }
+    if (isMonth) {
+        console.log(1)
+        if (checkAnimation) return
+        console.log(2)
+        checkAnimation = true;
+        monthName.innerText = currentDate.getFullYear() + 1;
+        monthContainer.scrollTo({ top: 340, behavior: 'smooth' });
+        console.log(3)
+        setTimeout(() => {
+            monthContainer.innerHTML = '';
+            currentDate = new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), currentDate.getDate())
+            monthsRenderModule();
+            checkAnimation = false;
+            monthContainer.appendChild(circle);
+            console.log(4)
+        }, 300)
+    }
 }
 
 //mouse scroll scrolls to next month
@@ -308,18 +369,110 @@ monthContainer.onwheel = function (event) {
 // circle for hover effect
 let circle = document.createElement('div')
 circle.id = 'circle';
+circle.style.width = '80px';
+circle.style.height = '80px';
 monthContainer.appendChild(circle)
 circle.style.top = '700px';
 
 //hover effect handler for calendar
 document.body.onmousemove = function (event) {
-    circle.style.left = `${event.clientX - monthContainer.getBoundingClientRect().left - 40}px`;
-    if (prevMonthArr.length > 4) {
-        circle.style.top = `${event.clientY - 30 + (prevMonthArr.length - 4) * 30}px`;
+    if (isDay) {
+        circle.style.left = `${event.clientX - monthContainer.getBoundingClientRect().left - 40}px`;
+        if (prevMonthArr.length > 4) {
+            circle.style.top = `${event.clientY + (prevMonthArr.length - 4) * 30}px`;
+        }
+        else {
+            circle.style.top = `${event.clientY}px`;
+        }
     }
-    else {
-        circle.style.top = `${event.clientY - 30}px`;
+    if (isMonth) {
+        circle.style.left = `${event.clientX - monthContainer.getBoundingClientRect().left - 60}px`;
+        circle.style.top = `${event.clientY + 50}px`;
     }
 }
 
 
+
+
+
+// =============== Month View =================
+
+
+
+
+//creating new section of months instead of days
+
+monthName.onclick = function (event) {
+    //FOR NOW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    if (isMonth) return
+
+    isDay = false;
+    isMonth = true;
+
+    monthContainer.innerHTML = '';
+
+    dayHeaderContainer.style.display = 'none';
+
+    monthContainer.style.height = '220px';
+    monthContainer.style.flexDirection = 'row';
+    monthContainer.style.flexWrap = 'wrap';
+    circle.style.width = '120px';
+    circle.style.height = '120px';
+    monthContainer.appendChild(circle);
+    monthsRenderModule();
+}
+let monthShortNameArr = monthNameArr.map(item => {
+    return item[0] + item[1] + item[2]
+})
+
+//for proper render i need to switch monthContainer to another flex-direction and flex-wrap
+function renderDivs() {
+    for (let i = 0; i < 40; i++) {
+
+        let wholeMonthDiv = document.createElement('div');
+        wholeMonthDiv.classList = 'wholeMonthDiv';
+        wholeMonthDiv.setAttribute('data-date', `${new Date(currentDate.getFullYear() - 1, i, 1)}`);
+
+        if (new Date(wholeMonthDiv.dataset.date).getFullYear() === currentDate.getFullYear()) {
+            wholeMonthDiv.style.color = 'black';
+            //highlighting current month
+            if (new Date(wholeMonthDiv.dataset.date).getFullYear() === new Date().getFullYear()) {
+                if (new Date(wholeMonthDiv.dataset.date).getMonth() === new Date().getMonth()) {
+                    wholeMonthDiv.style.boxShadow = 'inset 0 0 0 2px #197278'
+                }
+            }
+
+        }
+        let inWholeMonth = document.createElement('div')
+        inWholeMonth.classList = 'inWholeMonth';
+        wholeMonthDiv.innerText = monthShortNameArr[i % 12];
+        monthContainer.appendChild(wholeMonthDiv);
+        wholeMonthDiv.appendChild(inWholeMonth);
+
+        wholeMonthDiv.onclick = function() {
+            //resetting global bool vars 
+            isDay = true;
+            isMonth = false;
+            isYear = false;
+            currentDate = new Date(wholeMonthDiv.dataset.date);
+            monthContainer.innerHTML = '';
+            monthContainer.style.height= '180px';
+            dayHeaderContainer.style.display = 'flex'
+            renderCalender();
+            renderDayScope(window.fromDay, window.toDay);
+            monthName.innerText = monthNameArr[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
+            monthContainer.appendChild(circle);
+
+        }
+
+    }
+}
+
+
+
+//main module that will invoke all functions
+function monthsRenderModule() {
+    monthName.innerText = currentDate.getFullYear();
+    renderDivs();
+    monthContainer.scrollTop = 165;
+}
