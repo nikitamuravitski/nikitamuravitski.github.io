@@ -204,11 +204,11 @@ function renderDayScope(from, to, classTag, focusClassTag) {
         let elementDate;
 
         if (isYear) {
-            elementDate = new Date(new Date(element.dataset.date).getFullYear() , 0, 1).getTime();
-        }            
+            elementDate = new Date(new Date(element.dataset.date).getFullYear(), 0, 1).getTime();
+        }
         if (isMonth) {
             elementDate = new Date(new Date(element.dataset.date).getFullYear(), new Date(element.dataset.date).getMonth(), 1).getTime();
-        }           
+        }
         if (isDay) {
             elementDate = new Date(element.dataset.date).getTime();
         }
@@ -271,7 +271,6 @@ function setEventAllDays() {
 }
 
 function removeFocus(classTag, focusClassTag) {
-    console.log(3)
     document.querySelectorAll(classTag).forEach(element => {
         element.classList.remove(focusClassTag)
     })
@@ -332,7 +331,7 @@ prevButton.onclick = function () {
             monthsRenderModule();
             checkAnimation = false;
             monthContainer.appendChild(circle);
-        }, 300)
+        }, 250)
     }
     if (isYear) {
         if (checkAnimation) return
@@ -345,7 +344,7 @@ prevButton.onclick = function () {
             monthsRenderModule();
             checkAnimation = false;
 
-        }, 300)
+        }, 250)
     }
 }
 
@@ -378,7 +377,7 @@ nextButton.onclick = function () {
             monthsRenderModule();
             checkAnimation = false;
 
-        }, 300)
+        }, 250)
     }
     if (isYear) {
         if (checkAnimation) return
@@ -391,7 +390,7 @@ nextButton.onclick = function () {
             monthsRenderModule();
             checkAnimation = false;
 
-        }, 300)
+        }, 250)
     }
 }
 
