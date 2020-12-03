@@ -367,7 +367,7 @@ prevButton.onclick = function () {
                 currentDate = new Date(currentDate.getFullYear() - 10, 1, 1)
                 monthsRenderModule();
                 checkAnimation = false;
-
+                monthContainer.appendChild(circle);
             }, 250)
         } else {
             monthContainer.innerHTML = '';
@@ -396,7 +396,7 @@ nextButton.onclick = function () {
                 renderCalender();
                 renderDayScope(window.fromDay, window.toDay, '.day', 'focus');
                 checkAnimation = false;
-
+                monthContainer.appendChild(circle);
             }, 250)
         } else {
             monthContainer.innerHTML = '';
@@ -420,7 +420,7 @@ nextButton.onclick = function () {
                 currentDate = new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), currentDate.getDate())
                 monthsRenderModule();
                 checkAnimation = false;
-
+                monthContainer.appendChild(circle);
             }, 250)
         } else {
             monthContainer.innerHTML = '';
@@ -444,7 +444,7 @@ nextButton.onclick = function () {
                 currentDate = new Date(currentDate.getFullYear() + 10, 1, 1)
                 monthsRenderModule();
                 checkAnimation = false;
-
+                monthContainer.appendChild(circle);
             }, 250)
         } else {
             monthContainer.innerHTML = '';
@@ -470,12 +470,8 @@ monthContainer.onwheel = function (event) {
 
 // circle for hover effect
 
-
 let circle = document.createElement('div')
-
-
 circle.id = 'circle';
-
 monthContainer.appendChild(circle)
 //circle.style.top = '700px';
 
@@ -526,16 +522,15 @@ function setDates() {
         prevDate = new Date(currentDate.getFullYear() - 10, 1, 1);
     }
 }
-monthContainer.ontouchstart = function(event) {
+monthContainer.ontouchstart = function (event) {
 
     setDates()
 }
 
 
-monthContainer.ontouchmove = function touchMove () {
+monthContainer.ontouchmove = function touchMove() {
     isTouchExists = true;
     if (circle.style.display != 'none') {
-        //circle.remove();
         circle.style.display = 'none'
     }
     function calcPrevNextMonthDiv(arr) {
@@ -552,8 +547,8 @@ monthContainer.ontouchmove = function touchMove () {
     if (isDay) calcDiv = calcPrevNextMonthDiv(document.querySelectorAll('.day'));
     if (isMonth) calcDiv = calcPrevNextMonthDiv(document.querySelectorAll('.wholeMonthDiv'));
     if (isYear) calcDiv = calcPrevNextMonthDiv(document.querySelectorAll('.wholeYearDiv'));
-    
-    if (nextDiv.getBoundingClientRect().top <= positionTop) { 
+
+    if (nextDiv.getBoundingClientRect().top <= positionTop) {
         console.log(nextDiv.getBoundingClientRect().top)
         nextButton.click();
         calcDiv;
@@ -564,7 +559,7 @@ monthContainer.ontouchmove = function touchMove () {
         calcDiv;
     }
 
- }
+}
 
 
 
