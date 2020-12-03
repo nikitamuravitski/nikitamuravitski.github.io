@@ -299,98 +299,160 @@ removeRangeButton.onclick = function (event) {
 
 
 let checkAnimation = false;
+let isTouchExists = false;
 
 //prev button handler
 prevButton.onclick = function () {
+
     if (isDay) {
-        if (checkAnimation) return;
-        checkAnimation = true;
+        if (!isTouchExists) {
+            if (checkAnimation) return;
+            checkAnimation = true;
+        }
         currentDate.setMonth(currentDate.getMonth() - 1);
         currentDate.setDate(1);
         monthName.innerText = monthNameArr[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
-        monthContainer.scrollTo({ top: 0, behavior: 'smooth' })
-        setTimeout(() => {
+        if (!isTouchExists) {
+            monthContainer.scrollTo({ top: 0, behavior: 'smooth' })
+            setTimeout(() => {
+                monthContainer.innerHTML = '';
+                renderCalender();
+                renderDayScope(window.fromDay, window.toDay, '.day', 'focus');
+                checkAnimation = false;
+                monthContainer.appendChild(circle);
+            }, 250)
+        } else {
             monthContainer.innerHTML = '';
             renderCalender();
             renderDayScope(window.fromDay, window.toDay, '.day', 'focus');
             checkAnimation = false;
-            monthContainer.appendChild(circle);
-        }, 250)
+        }
+
 
     }
     if (isMonth) {
 
-        if (checkAnimation) return
-        checkAnimation = true;
-
+        if (!isTouchExists) {
+            if (checkAnimation) return;
+            checkAnimation = true;
+        }
         monthName.innerText = currentDate.getFullYear() - 1;
-        monthContainer.scrollTo({ top: 0, behavior: 'smooth' });
-        setTimeout(() => {
+        if (!isTouchExists) {
+            monthContainer.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => {
+                monthContainer.innerHTML = '';
+                currentDate = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), currentDate.getDate())
+                monthsRenderModule();
+                checkAnimation = false;
+                monthContainer.appendChild(circle);
+            }, 250)
+        } else {
             monthContainer.innerHTML = '';
             currentDate = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), currentDate.getDate())
             monthsRenderModule();
             checkAnimation = false;
-            monthContainer.appendChild(circle);
-        }, 250)
+        }
+
     }
     if (isYear) {
-        if (checkAnimation) return
-        checkAnimation = true;
+        if (!isTouchExists) {
+            if (checkAnimation) return;
+            checkAnimation = true;
+        }
         monthName.innerText = `${currentDate.getFullYear() - 10} - ${currentDate.getFullYear()}`;
-        monthContainer.scrollTo({ top: 0, behavior: 'smooth' });
-        setTimeout(() => {
+        if (!isTouchExists) {
+            monthContainer.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => {
+                monthContainer.innerHTML = '';
+                currentDate = new Date(currentDate.getFullYear() - 10, 1, 1)
+                monthsRenderModule();
+                checkAnimation = false;
+
+            }, 250)
+        } else {
             monthContainer.innerHTML = '';
             currentDate = new Date(currentDate.getFullYear() - 10, 1, 1)
             monthsRenderModule();
-            checkAnimation = false;
+        }
 
-        }, 250)
     }
 }
 
 //next button handler
 nextButton.onclick = function () {
     if (isDay) {
-        if (checkAnimation) return
-        checkAnimation = true;
+
+        if (!isTouchExists) {
+            if (checkAnimation) return;
+            checkAnimation = true;
+        }
         currentDate.setMonth(currentDate.getMonth() + 1);
         currentDate.setDate(1);
         monthName.innerText = monthNameArr[currentDate.getMonth()] + ' ' + currentDate.getFullYear();
-        monthContainer.scrollTo({ top: 30 * document.querySelectorAll('.week').length, behavior: 'smooth' })
-        setTimeout(() => {
+        if (!isTouchExists) {
+            monthContainer.scrollTo({ top: 30 * document.querySelectorAll('.week').length, behavior: 'smooth' })
+            setTimeout(() => {
+                monthContainer.innerHTML = '';
+                renderCalender();
+                renderDayScope(window.fromDay, window.toDay, '.day', 'focus');
+                checkAnimation = false;
+
+            }, 250)
+        } else {
             monthContainer.innerHTML = '';
             renderCalender();
             renderDayScope(window.fromDay, window.toDay, '.day', 'focus');
             checkAnimation = false;
+        }
 
-        }, 250)
     }
     if (isMonth) {
 
-        if (checkAnimation) return
-        checkAnimation = true;
+        if (!isTouchExists) {
+            if (checkAnimation) return;
+            checkAnimation = true;
+        }
         monthName.innerText = currentDate.getFullYear() + 1;
-        monthContainer.scrollTo({ top: 340, behavior: 'smooth' });
-        setTimeout(() => {
+        if (!isTouchExists) {
+            monthContainer.scrollTo({ top: 340, behavior: 'smooth' });
+            setTimeout(() => {
+                monthContainer.innerHTML = '';
+                currentDate = new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), currentDate.getDate())
+                monthsRenderModule();
+                checkAnimation = false;
+
+            }, 250)
+        } else {
             monthContainer.innerHTML = '';
             currentDate = new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), currentDate.getDate())
             monthsRenderModule();
             checkAnimation = false;
+        }
 
-        }, 250)
     }
     if (isYear) {
-        if (checkAnimation) return
-        checkAnimation = true;
+
+        if (!isTouchExists) {
+            if (checkAnimation) return;
+            checkAnimation = true;
+        }
         monthName.innerText = `${currentDate.getFullYear() + 10} - ${currentDate.getFullYear() + 20}`;
-        monthContainer.scrollTo({ top: 220, behavior: 'smooth' });
-        setTimeout(() => {
+        if (!isTouchExists) {
+            monthContainer.scrollTo({ top: 220, behavior: 'smooth' });
+            setTimeout(() => {
+                monthContainer.innerHTML = '';
+                currentDate = new Date(currentDate.getFullYear() + 10, 1, 1)
+                monthsRenderModule();
+                checkAnimation = false;
+
+            }, 250)
+        } else {
             monthContainer.innerHTML = '';
             currentDate = new Date(currentDate.getFullYear() + 10, 1, 1)
             monthsRenderModule();
             checkAnimation = false;
+        }
 
-        }, 250)
     }
 }
 
@@ -411,7 +473,7 @@ let circle = document.createElement('div')
 circle.id = 'circle';
 
 monthContainer.appendChild(circle)
-circle.style.top = '700px';
+//circle.style.top = '700px';
 
 //hover effect handler for calendar
 document.body.onmousemove = function (event) {
@@ -434,6 +496,44 @@ document.body.onmousemove = function (event) {
     }
 }
 
+
+//swipe handlers
+let circleRemover = false
+monthContainer.ontouchstart = function () {
+    if (circleRemover) {
+        monthContainer.removeChild(circle)
+        circleRemover = true
+    }
+
+}
+monthContainer.ontouchmove = function () {
+    isTouchExists = true;
+    let nextMonthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+    let prevMonthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+    let renderedMonthCollection = document.querySelectorAll('.day')
+    let nextMonthDiv;
+    let prevMonthDiv;
+    function calcPrevNextMonthDiv() {
+        renderedMonthCollection.forEach(item => {
+            if (item.dataset.date == prevMonthDate) {
+                prevMonthDiv = item;
+            }
+            if (item.dataset.date == nextMonthDate) {
+                nextMonthDiv = item;
+            }
+        })
+    }
+    calcPrevNextMonthDiv()
+    if (nextMonthDiv.getBoundingClientRect().top <= 85) {
+        nextButton.click();
+        calcPrevNextMonthDiv()
+    }
+    if (prevMonthDiv.getBoundingClientRect().top >= 85) {
+        prevButton.click();
+        calcPrevNextMonthDiv();
+    }
+
+}
 
 
 
