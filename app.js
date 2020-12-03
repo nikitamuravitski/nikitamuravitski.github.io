@@ -506,7 +506,7 @@ monthContainer.ontouchstart = function () {
     }
 
 }
-monthContainer.ontouchmove = function () {
+monthContainer.ontouchmove = function (event) {
     isTouchExists = true;
     let nextMonthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
     let prevMonthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
@@ -526,7 +526,7 @@ monthContainer.ontouchmove = function () {
     calcPrevNextMonthDiv()
     if (nextMonthDiv.getBoundingClientRect().top <= 85) {
         nextButton.click();
-        calcPrevNextMonthDiv()
+        calcPrevNextMonthDiv();
     }
     if (prevMonthDiv.getBoundingClientRect().top >= 85) {
         prevButton.click();
