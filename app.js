@@ -506,34 +506,69 @@ monthContainer.ontouchstart = function () {
     }
 
 }
-monthContainer.ontouchmove = function (event) {
+
+
+let nextDate;
+let prevDate;
+let positionTop;
+let nextDiv;
+let prevDiv;
+function setDates() {
+    if (isDay) {
+        positionTop = 85;
+        nextDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+        prevDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+    }
+    if (isMonth) {
+        positionTop = 160;
+        nextDate = new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), 1);
+        prevDate = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), 1);
+    }
+    if (isYear) {
+        positionTop = 105;
+        nextDate = new Date(currentDate.getFullYear() + 10, 1, 1);
+        prevDate = new Date(currentDate.getFullYear() - 10, 1, 1);
+    }
+}
+monthContainer.ontouchstart = function(event) {
+    console.log(event.touches[0].clientY)
+    setDates()
+}
+monthContainer.ontouchmove = function touchMove () {
     isTouchExists = true;
-    let nextMonthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
-    let prevMonthDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
-    let renderedMonthCollection = document.querySelectorAll('.day')
-    let nextMonthDiv;
-    let prevMonthDiv;
-    function calcPrevNextMonthDiv() {
-        renderedMonthCollection.forEach(item => {
-            if (item.dataset.date == prevMonthDate) {
-                prevMonthDiv = item;
+
+    
+
+
+    function calcPrevNextMonthDiv(arr) {
+        arr.forEach(item => {
+            if (item.dataset.date == prevDate) {
+                prevDiv = item;
             }
-            if (item.dataset.date == nextMonthDate) {
-                nextMonthDiv = item;
+            if (item.dataset.date == nextDate) {
+                nextDiv = item;
             }
         })
     }
-    calcPrevNextMonthDiv()
-    if (nextMonthDiv.getBoundingClientRect().top <= 85) {
+    let calcDiv;
+    if (isDay) calcDiv = calcPrevNextMonthDiv(document.querySelectorAll('.day'));
+    if (isMonth) calcDiv = calcPrevNextMonthDiv(document.querySelectorAll('.wholeMonthDiv'));
+    if (isYear) calcDiv = calcPrevNextMonthDiv(document.querySelectorAll('.wholeYearDiv'));
+    
+    if (nextDiv.getBoundingClientRect().top <= positionTop) { 
+
         nextButton.click();
-        calcPrevNextMonthDiv();
-    }
-    if (prevMonthDiv.getBoundingClientRect().top >= 85) {
-        prevButton.click();
-        calcPrevNextMonthDiv();
+        calcDiv;
+        
+
     }
 
-}
+    if (prevDiv.getBoundingClientRect().top >= positionTop) {
+        prevButton.click();
+        calcDiv;
+    }
+
+ }
 
 
 
