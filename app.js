@@ -469,11 +469,17 @@ monthContainer.onwheel = function (event) {
 }
 
 // circle for hover effect
+
+
 let circle = document.createElement('div')
+
+
 circle.id = 'circle';
 
 monthContainer.appendChild(circle)
 //circle.style.top = '700px';
+
+
 
 //hover effect handler for calendar
 document.body.onmousemove = function (event) {
@@ -496,17 +502,7 @@ document.body.onmousemove = function (event) {
     }
 }
 
-
 //swipe handlers
-let circleRemover = false
-monthContainer.ontouchstart = function () {
-    if (circleRemover) {
-        monthContainer.removeChild(circle)
-        circleRemover = true
-    }
-
-}
-
 
 let nextDate;
 let prevDate;
@@ -520,9 +516,9 @@ function setDates() {
         prevDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
     }
     if (isMonth) {
-        positionTop = 160;
-        nextDate = new Date(currentDate.getFullYear() + 1, currentDate.getMonth(), 1);
-        prevDate = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), 1);
+        positionTop = 50;
+        nextDate = new Date(currentDate.getFullYear() + 1, 1, 1);
+        prevDate = new Date(currentDate.getFullYear() - 1, 1, 1);
     }
     if (isYear) {
         positionTop = 105;
@@ -531,15 +527,17 @@ function setDates() {
     }
 }
 monthContainer.ontouchstart = function(event) {
-    console.log(event.touches[0].clientY)
+
     setDates()
 }
+
+
 monthContainer.ontouchmove = function touchMove () {
     isTouchExists = true;
-
-    
-
-
+    if (circle.style.display != 'none') {
+        //circle.remove();
+        circle.style.display = 'none'
+    }
     function calcPrevNextMonthDiv(arr) {
         arr.forEach(item => {
             if (item.dataset.date == prevDate) {
@@ -556,11 +554,9 @@ monthContainer.ontouchmove = function touchMove () {
     if (isYear) calcDiv = calcPrevNextMonthDiv(document.querySelectorAll('.wholeYearDiv'));
     
     if (nextDiv.getBoundingClientRect().top <= positionTop) { 
-
+        console.log(nextDiv.getBoundingClientRect().top)
         nextButton.click();
         calcDiv;
-        
-
     }
 
     if (prevDiv.getBoundingClientRect().top >= positionTop) {
